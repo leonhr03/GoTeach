@@ -45,6 +45,8 @@ func main() {
 
 	})
 
+
+	handler := enableCORS(mux)
 	println("Server läuft auf http://localhost:8080/entrys ...")
 
 	log.Fatal(http.ListenAndServe(":"+port, mux))
