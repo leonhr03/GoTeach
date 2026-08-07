@@ -12,6 +12,23 @@ type Entry struct {
 	Code  string `json:"code"`
 }
 
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Erlaube Anfragen von allen Domains (oder hier deine Angular-Domain eintragen)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		// Preflight-Anfragen (Browser schickt OPTIONS vor POST/PUT) direkt mit 200 OK beantworten
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 
 	port := os.Getenv("PORT")
@@ -45,8 +62,7 @@ func main() {
 
 	})
 
-
 	println("Server läuft auf http://localhost:8080/entrys ...")
 
-	log.Fatal(http.ListenAndServe(":"+port, mux))
+	log.Fatal(http.ListenAndServe(":"+port, corsMiddleware(mux)))
 }
