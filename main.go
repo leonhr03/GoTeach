@@ -46,25 +46,7 @@ func main() {
 	})
 
 
-	handler := enableCORS(mux)
 	println("Server läuft auf http://localhost:8080/entrys ...")
 
-	log.Fatal(http.ListenAndServe(":"+port, handler))
-}
-
-func enableCORS(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Erlaubt Anfragen von allen Domains (auch file:// und localhost)
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		// Preflight OPTIONS-Anfrage des Browsers sofort beantworten
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
+	log.Fatal(http.ListenAndServe(":"+port, mux))
 }
